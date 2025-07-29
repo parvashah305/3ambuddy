@@ -1,0 +1,506 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden; /* Prevent horizontal scrollbar */
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #0f172a;
+  color: white;
+  overflow-x: hidden; /* Prevent horizontal scrollbar */
+}
+
+/* Custom scrollbar - Desktop only */
+@media (min-width: 768px) {
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #7c3aed;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8b5cf6;
+  }
+}
+
+/* Smooth animations */
+* {
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Focus styles for accessibility */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* Animation keyframes */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hamburgerRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
+
+@keyframes hamburgerLine1 {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(6px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(6px) rotate(45deg);
+  }
+}
+
+@keyframes hamburgerLine2 {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes hamburgerLine3 {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+}
+
+/* Utility classes */
+.text-gradient {
+  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bg-gradient-night {
+  background: linear-gradient(135deg, #0f172a, #1e293b, #3730a3);
+}
+
+/* Animation utility classes */
+.animate-slide-in-left {
+  animation: slideInFromLeft 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInFromRight 0.6s ease-out;
+}
+
+.animate-slide-in-bottom {
+  animation: slideInFromBottom 0.6s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.6s ease-out;
+}
+
+/* Hamburger menu animations */
+.hamburger-open .hamburger-line-1 {
+  animation: hamburgerLine1 0.3s ease-in-out forwards;
+}
+
+.hamburger-open .hamburger-line-2 {
+  animation: hamburgerLine2 0.3s ease-in-out forwards;
+}
+
+.hamburger-open .hamburger-line-3 {
+  animation: hamburgerLine3 0.3s ease-in-out forwards;
+}
+
+/* Mobile responsiveness improvements */
+@media (max-width: 768px) {
+  /* Typography scaling - SMALLER fonts on mobile */
+  .text-4xl {
+    font-size: 1.75rem !important;
+    line-height: 2.25rem !important;
+  }
+  
+  .text-5xl {
+    font-size: 2rem !important;
+    line-height: 2.5rem !important;
+  }
+  
+  .text-6xl {
+    font-size: 2.25rem !important;
+    line-height: 2.75rem !important;
+  }
+  
+  .text-7xl {
+    font-size: 2.5rem !important;
+    line-height: 3rem !important;
+  }
+
+  /* Smaller text sizes for mobile */
+  .text-xl {
+    font-size: 1rem !important;
+    line-height: 1.5rem !important;
+  }
+
+  .text-2xl {
+    font-size: 1.25rem !important;
+    line-height: 1.75rem !important;
+  }
+
+  .text-3xl {
+    font-size: 1.5rem !important;
+    line-height: 2rem !important;
+  }
+
+  /* Container padding */
+  .container, .max-w-7xl {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Section padding */
+  section {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
+
+  /* Grid adjustments */
+  .grid {
+    gap: 1rem !important;
+  }
+
+  /* Card padding */
+  .p-8 {
+    padding: 1rem !important;
+  }
+
+  .p-6 {
+    padding: 0.75rem !important;
+  }
+
+  /* Button sizing */
+  .px-6 {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  .py-3 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  /* Spacing adjustments */
+  .space-y-8 > * + * {
+    margin-top: 1.5rem !important;
+  }
+
+  .space-y-6 > * + * {
+    margin-top: 1rem !important;
+  }
+
+  .mb-12 {
+    margin-bottom: 2rem !important;
+  }
+
+  .mb-8 {
+    margin-bottom: 1.5rem !important;
+  }
+
+  .mb-6 {
+    margin-bottom: 1rem !important;
+  }
+
+  /* Navigation adjustments */
+  .hidden.md\\:flex {
+    display: none !important;
+  }
+
+  .md\\:hidden {
+    display: block !important;
+  }
+
+  /* Form inputs */
+  input, textarea, select {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+
+  /* Prevent horizontal scroll on mobile */
+  .overflow-hidden {
+    overflow: hidden !important;
+  }
+
+  /* Fix for cards and containers */
+  .rounded-2xl, .rounded-3xl {
+    border-radius: 1rem !important;
+  }
+
+  /* Smaller icons on mobile */
+  .w-8, .h-8 {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+  }
+
+  .w-6, .h-6 {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+
+  /* Fix for feature pills */
+  .flex.flex-wrap {
+    gap: 0.5rem !important;
+  }
+
+  .flex.flex-wrap > div {
+    font-size: 0.75rem !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Even smaller screens */
+  .text-4xl {
+    font-size: 1.5rem !important;
+  }
+  
+  .text-5xl {
+    font-size: 1.75rem !important;
+  }
+  
+  .text-6xl {
+    font-size: 2rem !important;
+  }
+
+  .text-xl {
+    font-size: 0.875rem !important;
+  }
+
+  .text-2xl {
+    font-size: 1rem !important;
+  }
+
+  .text-3xl {
+    font-size: 1.25rem !important;
+  }
+
+  .container, .max-w-7xl {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  .p-8 {
+    padding: 0.75rem !important;
+  }
+
+  .p-6 {
+    padding: 0.5rem !important;
+  }
+
+  /* Even smaller spacing */
+  section {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+
+  .mb-12 {
+    margin-bottom: 1.5rem !important;
+  }
+
+  .mb-8 {
+    margin-bottom: 1rem !important;
+  }
+
+  .mb-6 {
+    margin-bottom: 0.75rem !important;
+  }
+}
+
+/* Loading animation for better UX */
+.loading {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Ensure all sections prevent horizontal overflow */
+section {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Fix for any potential overflow issues */
+.max-w-7xl {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Chat page specific fixes */
+.chat-container {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.chat-input {
+  padding: 1rem;
+  background: #1e293b;
+  border-top: 1px solid rgba(124, 58, 237, 0.2);
+}
+
+.chat-textarea {
+  min-height: 44px;
+  max-height: 120px;
+  resize: none;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+/* Mobile chat improvements */
+@media (max-width: 768px) {
+  .chat-messages {
+    padding: 0.75rem;
+  }
+  
+  .chat-input {
+    padding: 0.75rem;
+  }
+  
+  .chat-textarea {
+    min-height: 40px;
+    font-size: 16px;
+  }
+}

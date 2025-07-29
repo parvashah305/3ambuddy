@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique
+  name      String?
+  email     String   @unique
+  username  String?  @unique
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  conversations Conversation[]
+  memories      Memory[]
+
+  @@map("users")
+}
+
+enum ConversationType {
+  chat
+  voice
+}
+
+enum SenderType {
+  user
+  ai
+}
+
+enum MessageType {
+  voice
+  chat
+}
+
+model Conversation {
+  id           String           @id @default(uuid())
+  userId       Int
+  user         User             @relation(fields: [userId], references: [id])
+  type         ConversationType
+  startedAt    DateTime         @default(now()) @map("started_at")
+  endedAt      DateTime?        @map("ended_at")
+  overallMood  String?          @map("overall_user_mood")
+  sentiment    String?
+  metadata     Json?
+  title        String?
+  memoryId     String?          @unique @map("memory_id")
+  memory       Memory?          @relation("ConversationMemory", fields: [memoryId], references: [id])
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+model Memory {
+  id             String        @id @default(uuid())
+  conversation   Conversation? @relation("ConversationMemory")
+  conversationId String?    @unique
+  userId         Int
+  user           User          @relation(fields: [userId], references: [id])
+  title          String?
+  summary        String?
+  createdAt      DateTime      @default(now()) @map("created_at")
+  metadata       Json?
+
+  @@map("memories")
+}
+
+model Message {
+  id             String         @id @default(uuid())
+  conversationId String
+  conversation   Conversation   @relation(fields: [conversationId], references: [id])
+  sender         SenderType
+  content        String
+  type           MessageType
+  metadata       Json?
+  createdAt      DateTime       @default(now()) @map("created_at")
+
+  @@map("messages")
+}

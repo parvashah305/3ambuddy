@@ -1,0 +1,9 @@
+node_modules/
+sample_audio/
+uploads/
+.env
+*.mp3
+*.wav
+/generated/prisma
+results
+.DS_Store
