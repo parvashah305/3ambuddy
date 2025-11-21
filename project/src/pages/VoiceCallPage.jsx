@@ -171,8 +171,13 @@ const VoiceCallPage = ({ user }) => {
         }
 
         const onAudioChunkReceived = (chunk) => {
+            console.log(`Received audio chunk: ${chunk.length} bytes`);
             audioChunkQueue.current.push(chunk);
             processAudioQueue();
+        };
+
+        const onAudioStreamEnd = () => {
+            console.log("✅ Audio stream ended - all chunks received");
         };
 
         const onDisconnect = () => {
@@ -188,6 +193,7 @@ const VoiceCallPage = ({ user }) => {
                 socketRef.current.on("disconnect", onDisconnect)
                 socketRef.current.on("audio-response", onAudioResponseReceived)
                 socketRef.current.on("audio-chunk", onAudioChunkReceived)
+                socketRef.current.on("audio-stream-end", onAudioStreamEnd)
             }
         };
         connectSocket();
@@ -199,6 +205,7 @@ const VoiceCallPage = ({ user }) => {
                 socketRef.current.off("disconnect", onDisconnect);
                 socketRef.current.off("audio-response", onAudioResponseReceived);
                 socketRef.current.off("audio-chunk", onAudioChunkReceived);
+                socketRef.current.off("audio-stream-end", onAudioStreamEnd);
             }
         }
     }, [isCalling, isRinging])

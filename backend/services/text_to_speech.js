@@ -25,24 +25,50 @@ const tts_engine = async (text, instructions, voice = VOICE_SETTINGS.VOICE, sock
         });
 
         const nodeStream = Readable.fromWeb(response.body);
-        let lastTime = Date.now();
-        nodeStream.on('data', (chunk) => {
-            const now = Date.now();
-            // console.log(`Received chunk: ${chunk.length} bytes, delay: ${now - lastTime}ms`);
-            console.log(`Sending chunk of size: ${chunk.length}, delay: ${now - lastTime}ms`);
-            lastTime = now;
-            if (socket) {
-                socket.emit("audio-chunk", chunk)
-            }
-        });
-
         const fileStream = fs.createWriteStream(outputFile);
-        nodeStream.pipe(fileStream);
+        
+        let lastTime = Date.now();
+        let chunkCount = 0;
 
+        // Return a promise that resolves when the stream is complete
+        return new Promise((resolve, reject) => {
+            nodeStream.on('data', (chunk) => {
+                chunkCount++;
+                const now = Date.now();
+                console.log(`Chunk ${chunkCount}: ${chunk.length} bytes, delay: ${now - lastTime}ms`);
+                lastTime = now;
+                
+                if (socket) {
+                    socket.emit("audio-chunk", chunk);
+                }
+            });
 
-        // const buffer = Buffer.from(await mp3.arrayBuffer());
-        // await fs.promises.writeFile(outputFile, buffer);
-        return outputFile;
+            nodeStream.on('end', () => {
+                console.log(`✅ Stream complete. Total chunks sent: ${chunkCount}`);
+                if (socket) {
+                    socket.emit("audio-stream-end");
+                }
+            });
+
+            nodeStream.on('error', (error) => {
+                console.error("Stream error:", error);
+                fileStream.end();
+                reject(error);
+            });
+
+            fileStream.on('finish', () => {
+                console.log(`✅ Audio file saved: ${outputFile}`);
+                resolve(outputFile);
+            });
+
+            fileStream.on('error', (error) => {
+                console.error("File write error:", error);
+                reject(error);
+            });
+
+            // Pipe the stream to save the file
+            nodeStream.pipe(fileStream);
+        });
     } catch (error) {
         console.error("Error in text-to-speech:", error);
         throw error;
