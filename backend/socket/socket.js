@@ -10,6 +10,8 @@ const { SUMMARIZE_CONVERSATION_PROMPT } = require('../config/prompts');
 const chat_engine = require("../services/chat_engine");
 const prisma = require('../lib/prisma');
 const tts_engine = require("../services/text_to_speech");
+const path = require('path');
+const { UPLOADS_DIR, ensureDirectoryExists } = require('../config/paths');
 
 function initializeSocket(io) {
     io.use(async (socket, next) => {
@@ -39,7 +41,10 @@ function initializeSocket(io) {
             try {
                 console.log(`[${socket.id}] Received audio event for conversationId: ${conversationId}`);
 
-                const filename = `uploads/audio_${Date.now()}_${socket.userId}.wav`;
+                // Ensure directory exists at runtime as well, just in case
+                ensureDirectoryExists(UPLOADS_DIR);
+
+                const filename = path.join(UPLOADS_DIR, `audio_${Date.now()}_${socket.userId}.wav`);
                 fs.writeFileSync(filename, Buffer.from(wavBuffer));
                 console.log(`[${socket.id}] Audio file saved: ${filename}`);
 

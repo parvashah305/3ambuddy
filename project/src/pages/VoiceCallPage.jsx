@@ -171,7 +171,8 @@ const VoiceCallPage = ({ user }) => {
         }
 
         const onAudioChunkReceived = (chunk) => {
-            console.log(`Received audio chunk: ${chunk.length} bytes`);
+            const size = chunk.byteLength || chunk.length || 0;
+            console.log(`Received audio chunk: ${size} bytes`);
             audioChunkQueue.current.push(chunk);
             processAudioQueue();
         };
@@ -247,6 +248,13 @@ const VoiceCallPage = ({ user }) => {
         }
 
         socketRef.current.once("call-started", (data) => {
+            // Unlock audio element for playback
+            if (audioElementRef.current) {
+                audioElementRef.current.play().then(() => {
+                    audioElementRef.current.pause();
+                }).catch(e => console.warn("Failed to unlock audio:", e));
+            }
+
             setConversationId(data.conversationId);
             setIsRinging(false);
             setIsCalling(true);

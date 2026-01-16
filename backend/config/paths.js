@@ -5,6 +5,7 @@ const fs = require('fs');
 const ROOT_DIR = path.resolve(__dirname, '..');
 const SAMPLE_AUDIO_DIR = path.join(ROOT_DIR, 'sample_audio');
 const RESULTS_DIR = path.join(ROOT_DIR, 'results');
+const UPLOADS_DIR = path.join(ROOT_DIR, 'uploads');
 
 // Voice settings
 const VOICE_SETTINGS = {
@@ -29,6 +30,7 @@ const ensureDirectoryExists = (dirPath) => {
 try {
     ensureDirectoryExists(SAMPLE_AUDIO_DIR);
     ensureDirectoryExists(RESULTS_DIR);
+    ensureDirectoryExists(UPLOADS_DIR);
 } catch (error) {
     console.error('Failed to initialize required directories:', error);
     process.exit(1); // Exit if directories cannot be created
@@ -38,6 +40,7 @@ module.exports = {
     ROOT_DIR,
     SAMPLE_AUDIO_DIR,
     RESULTS_DIR,
+    UPLOADS_DIR,
     VOICE_SETTINGS,
     ensureDirectoryExists // Export the function for use in other modules
-}; 
+};
