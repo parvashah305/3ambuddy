@@ -57,19 +57,21 @@ async function upsertMemory({ userId, conversationId, summary, title }) {
         if (!user) throw new Error('User not found');
         userIntId = user.id;
     }
-    let memory = await prisma.memory.findFirst({ where: { conversationId } });
-    if (memory) {
-        
-        memory = await prisma.memory.update({
-            where: { id: memory.id },
-            data: { summary, title, createdAt: new Date() }
-        });
-        return memory;
-    } else {
-        return prisma.memory.create({
-            data: { userId: userIntId, conversationId, summary, title }
-        });
-    }
+
+    return prisma.memory.upsert({
+        where: { conversationId: conversationId || "" },
+        update: {
+            summary,
+            title,
+            createdAt: new Date()
+        },
+        create: {
+            userId: userIntId,
+            conversationId,
+            summary,
+            title
+        }
+    });
 }
 
 module.exports = { createMemory, getAllMemoriesForUser, getMemoryByConversationId, getLatestMemoryForUser, upsertMemory }; 

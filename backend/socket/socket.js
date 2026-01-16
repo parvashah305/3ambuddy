@@ -23,6 +23,8 @@ function initializeSocket(io) {
         }
     });
 
+    const processedConversations = new Set();
+
     io.on('connection', (socket) => {
         console.log(`User connected: ${socket.id}, Clerk UUID: ${socket.userId}`);
 
@@ -102,6 +104,9 @@ function initializeSocket(io) {
                     greeting = `Hey there, how's it going?`;
                 }
                
+                socket.emit('call-started', { conversationId: conversation.id });
+                console.log(`[${socket.id}] Call started. ConversationId: ${conversation.id}`);
+
                 const aiAudioFile = await tts_engine(greeting, '', undefined, socket);
                 await createMessage({
                     conversationId: conversation.id,
@@ -112,9 +117,6 @@ function initializeSocket(io) {
                 });
                 const aiAudioBuffer = fs.readFileSync(aiAudioFile);
                 socket.emit('audio-response', aiAudioBuffer);
-
-                socket.emit('call-started', { conversationId: conversation.id });
-                console.log(`[${socket.id}] Call started. ConversationId: ${conversation.id}`);
             } catch (err) {
                 console.error(`[${socket.id}] Error in start-call event:`, err);
                 socket.emit('error', { message: err.message });
@@ -123,10 +125,10 @@ function initializeSocket(io) {
 
         socket.on('end-call', async (data) => {
             const conversationId = data?.conversationId || currentConversationId;
-            if (!conversationId) {
-                console.warn(`[${socket.id}] end-call event received but no conversationId found.`);
+            if (!conversationId || processedConversations.has(conversationId)) {
                 return;
             }
+            processedConversations.add(conversationId);
             try {
                 console.log(`[${socket.id}] Received end-call event for conversationId: ${conversationId}`);
                 await updateConversationEndTime(conversationId);
@@ -136,10 +138,7 @@ function initializeSocket(io) {
                     try {
                         const created = await createMemoryFromConversation(conversationId, socket.userId, SUMMARIZE_CONVERSATION_PROMPT);
                         if (created) {
-                            console.log(`[${socket.id}] Memory created successfully for conversationId: ${conversationId}`);
-                        }
-                        else {
-                            console.log(`[${socket.id}] Memory already existed for conversationId: ${conversationId}`);
+                            console.log(`[${socket.id}] Memory processed for conversationId: ${conversationId}`);
                         }
                     } catch (err) {
                         console.error(`[${socket.id}] Error creating memory (end-call):`, err);
@@ -328,7 +327,8 @@ function initializeSocket(io) {
 
         socket.on("disconnect", async () => {
             console.log(`[${socket.id}] User disconnected.`);
-            if (currentConversationId) {
+            if (currentConversationId && !processedConversations.has(currentConversationId)) {
+                processedConversations.add(currentConversationId);
                 try {
                     console.log(`[${socket.id}] Ending conversationId: ${currentConversationId}`);
                     await updateConversationEndTime(currentConversationId);
@@ -338,9 +338,6 @@ function initializeSocket(io) {
                             const created = await createMemoryFromConversation(currentConversationId, socket.userId, SUMMARIZE_CONVERSATION_PROMPT);
                             if (created) {
                                 console.log(`[${socket.id}] Memory created successfully for conversationId: ${currentConversationId}`);
-                            }
-                            else {
-                                console.log(`[${socket.id}] Memory already existed for conversationId: ${currentConversationId}`);
                             }
                         } catch (err) {
                             console.error(`[${socket.id}] Error creating memory:`, err);
