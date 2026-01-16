@@ -14,15 +14,15 @@ app.use('/api/webhooks', express.raw({ type: 'application/json' }), clerkWebHook
 
 const port = process.env.PORT || 5000;
 
-const allowedOrigin = process.env.CLIENT_WEB_HOST;
+const allowedOrigins = [process.env.CLIENT_WEB_HOST, 'http://localhost:5173', 'http://localhost:3000'].filter(Boolean);
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    if (origin !== allowedOrigin) {
+    if (!allowedOrigins.includes(origin)) {
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
     }
-    return callback(null, true);
+    callback(null, true);
   },
   credentials: true
 }));
@@ -51,7 +51,7 @@ app.get('/api/protected', verifyToken, (req, res) => {
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigin,
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
     credentials: true
   }
