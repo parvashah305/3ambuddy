@@ -86,19 +86,9 @@ async function voiceChat(audioFilePath, userId = null, conversationId = null, so
             throw new Error("Couldn't detect any speech.");
         }
 
-        console.log("Translating to target language...");
-        const translatedText = await send_to_gpt(
-            rawText,
-            getTranslationPrompt(TARGET_LANGUAGE),
-            0.5
-        );
-        console.log(`Translated (${TARGET_LANGUAGE}):`, translatedText);
-
-        // console.log(JSON.stringify(ongoingConversation), JSON.stringify(mostRecentConversation), JSON.stringify(memoryData));
-
         console.log("Generating response in chosen style...");
         const rawResponse = await send_to_gpt(
-            translatedText,
+            rawText,
             TEXT_RESPONSE_SYSTEM_PROMPT.replace("{ongoingConversation}", JSON.stringify(ongoingConversation)).replace("{conversation}", JSON.stringify(mostRecentConversation)).replace("{memory}", JSON.stringify(memoryData)),
             0.8
         );
@@ -121,7 +111,6 @@ async function voiceChat(audioFilePath, userId = null, conversationId = null, so
 
         return {
             original: rawText,
-            translated: translatedText,
             finalResponse: text,
             audioFile: outputFile
         };
