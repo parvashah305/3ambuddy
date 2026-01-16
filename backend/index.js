@@ -14,15 +14,32 @@ app.use('/api/webhooks', express.raw({ type: 'application/json' }), clerkWebHook
 
 const port = process.env.PORT || 5000;
 
-const allowedOrigins = [process.env.CLIENT_WEB_HOST, 'http://localhost:5173', 'http://localhost:3000'].filter(Boolean);
+const allowedOrigins = [
+  process.env.CLIENT_WEB_HOST,
+  'https://3ambuddy.vercel.app', // Explicitly allow the primary production domain
+  'http://localhost:5173',
+  'http://localhost:3000'
+].filter(Boolean).map(url => url.replace(/\/$/, "")); // Remove trailing slashes
+
+console.log("Allowed Origins:", allowedOrigins);
+
 app.use(cors({
   origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    if (!allowedOrigins.includes(origin)) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+    
+    // Normalize incoming origin
+    const normalizedOrigin = origin.replace(/\/$/, "");
+    
+    if (allowedOrigins.includes(normalizedOrigin)) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked for origin: ${origin}`);
+      // Instead of returning an Error object, we return null, false
+      // so the cors middleware handles it by sending a 204 or 403
+      // rather than the server crashing or sending a 500.
+      callback(null, false);
     }
-    callback(null, true);
   },
   credentials: true
 }));
