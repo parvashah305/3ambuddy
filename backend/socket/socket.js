@@ -69,10 +69,6 @@ function initializeSocket(io) {
                 ]);
                 console.log(`[${socket.id}] User and AI messages created for conversationId: ${conversationId}`);
 
-                const aiAudioBuffer = fs.readFileSync(result.audioFile);
-                socket.emit("audio-response", aiAudioBuffer);
-                console.log(`[${socket.id}] Sent audio-response to client.`);
-
                 currentConversationId = conversationId;
 
             } catch (err) {
@@ -120,8 +116,6 @@ function initializeSocket(io) {
                     type: 'voice',
                     metadata: { audioFile: aiAudioFile }
                 });
-                const aiAudioBuffer = fs.readFileSync(aiAudioFile);
-                socket.emit('audio-response', aiAudioBuffer);
             } catch (err) {
                 console.error(`[${socket.id}] Error in start-call event:`, err);
                 socket.emit('error', { message: err.message });
